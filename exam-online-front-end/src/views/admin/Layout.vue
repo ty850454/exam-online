@@ -56,7 +56,7 @@ import IconUserFill from "@/components/icons/IconUserFill.vue";
     </div>
   </header>
 
-  <div style="height: calc(100vh - 58px)">
+  <div style="min-height: calc(100vh - 58px)">
     <RouterView />
   </div>
 
