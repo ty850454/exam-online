@@ -4,16 +4,18 @@ import {ref} from "vue";
 import IconRight from "@/components/icons/IconRight.vue";
 
 const form = ref({})
-const activeStep = ref(0)
+const activeStep = ref(1)
 
 
 const questionSet = ref([
-  {
-    title: '分组',
-    questions: []
-  }
 ])
 
+function onAddQuestionGroup() {
+  questionSet.value.push({
+    title: '分组' + (questionSet.value.length + 1),
+    questions: []
+  })
+}
 
 function onSaveInfoClick(nextStep) {
   if (nextStep) {
@@ -24,8 +26,39 @@ function onSaveInfoClick(nextStep) {
 const dialogVisible = ref(false)
 
 
+const dialogQuestion = ref({})
+
+
+function onAddQuestionSave() {
+  dialogVisible.value = false
+}
+
 function onAddQuestion() {
   dialogVisible.value = true
+  dialogQuestion.value = {
+    type: 1,
+    score: 0,
+    title: '',
+    answer: '',
+    options: [
+      {
+        code: 'A',
+        content: ''
+      },
+      {
+        code: 'B',
+        content: ''
+      },
+      {
+        code: 'C',
+        content: ''
+      },
+      {
+        code: 'D',
+        content: ''
+      },
+    ]
+  }
 }
 
 </script>
@@ -113,7 +146,7 @@ function onAddQuestion() {
 
           <el-affix target=".left" :offset="80">
             <div class="navigator">
-              <div class="add-group">添加题目分组
+              <div class="add-group" @click="onAddQuestionGroup">添加题目分组
                 <IconRight/>
               </div>
               <div class="info">共 0 题 0 分</div>
@@ -134,8 +167,8 @@ function onAddQuestion() {
             </div>
           </div>
           <div class="card" v-if="questionSet.length > 0" v-for="question in questionSet">
-            <div>{{question.title}} <span>共0题，0分</span></div>
-            <div class="empty"  v-if="question.questions.length === 0">
+            <div>{{ question.title }} <span>共0题，0分</span></div>
+            <div class="empty" v-if="question.questions.length === 0">
               请向分组添加题目
             </div>
             <div>
@@ -165,34 +198,34 @@ function onAddQuestion() {
       <el-tab-pane label="step3" :name="2">Role</el-tab-pane>
     </el-tabs>
 
-    <el-dialog v-model="dialogVisible" title="新增题目" :width="800">
-      <el-form :model="form">
+    <el-dialog v-model="dialogVisible" title="新增题目" :width="800" class="question-dialog">
+      <el-form :model="dialogQuestion">
 
         <el-row>
           <el-col :span="12">
             <el-form-item label="题目类型" :label-width="100">
-              <el-select v-model="form.region" placeholder="选择题目类型">
-                <el-option label="单选题" value="shanghai" />
-                <el-option label="多选题" value="beijing" />
-                <el-option label="判断题" value="beijing" />
-                <el-option label="填空题" value="beijing" />
-                <el-option label="问答题" value="beijing" />
+              <el-select v-model="dialogQuestion.type" placeholder="选择题目类型">
+                <el-option label="单选题" :value="1"/>
+                <el-option label="多选题" :value="2"/>
+                <el-option label="判断题" :value="3"/>
+                <el-option label="填空题" :value="4"/>
+                <el-option label="问答题" :value="5"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="分数" :label-width="100">
-              <el-input v-model="form.name" autocomplete="off" />
+              <el-input-number v-model="dialogQuestion.score"/>
             </el-form-item>
           </el-col>
         </el-row>
 
 
         <el-form-item label="题目内容" :label-width="100">
-          <el-input v-model="form.name" autocomplete="off" type="textarea" />
+          <el-input v-model="dialogQuestion.title" autocomplete="off" type="textarea"/>
         </el-form-item>
 
-        <div style="margin-left: 20px">
+        <div style="margin-left: 20px" v-if="dialogQuestion.type === 1">
           <el-row>
             <el-col :span="4">
               设置答案
@@ -201,44 +234,34 @@ function onAddQuestion() {
               选项内容
             </el-col>
           </el-row>
-          <el-row>
-            <el-col :span="4">
-              <el-radio label="A" size="large"/>
-            </el-col>
-            <el-col :span="20">
-              <el-input placeholder="Please input" />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="4">
-              <el-radio label="B" size="large"/>
-            </el-col>
-            <el-col :span="20">
-              <el-input placeholder="Please input" />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="4">
-              <el-radio label="C" size="large"/>
-            </el-col>
-            <el-col :span="20">
-              <el-input placeholder="Please input" />
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="4">
-              <el-radio label="D" size="large"/>
-            </el-col>
-            <el-col :span="20">
-              <el-input placeholder="Please input" />
-            </el-col>
-          </el-row>
+
+          <el-radio-group v-model="dialogQuestion.answer" class="radios">
+
+            <el-radio class="radio" v-for="option in dialogQuestion.options" :label="option.code" size="large">
+              <el-row style="align-items: center">
+                <el-col :span="2">
+                  {{ option.code }}
+                </el-col>
+                <el-col :span="22">
+                  <el-input v-model="option.content" placeholder="输入选项内容"/>
+                </el-col>
+              </el-row>
+            </el-radio>
+
+          </el-radio-group>
+
         </div>
+
+
+
+
+
+
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button>取消</el-button>
-          <el-button type="primary" @click="dialogVisible=false">保存</el-button>
+          <el-button type="primary" @click="onAddQuestionSave">保存</el-button>
         </span>
       </template>
     </el-dialog>
@@ -341,7 +364,7 @@ function onAddQuestion() {
 }
 
 .input-200 :deep(.el-input) {
-  width: 200px!important;
+  width: 200px !important;
 }
 
 .exam-designer .card {
@@ -352,6 +375,25 @@ function onAddQuestion() {
 .exam-designer .card .empty {
   text-align: center;
   height: 100%;
+}
+
+.question-dialog .radios {
+  flex-direction: column;
+  width: 100%;
+}
+
+.question-dialog .radios .radio {
+  width: 100%;
+}
+
+
+.question-dialog .radios :deep(.el-radio__label) {
+  flex-grow: 1;
+}
+
+
+.question-dialog .radios :deep(.el-radio:last-child) {
+  margin-right: 32px;
 }
 
 </style>
