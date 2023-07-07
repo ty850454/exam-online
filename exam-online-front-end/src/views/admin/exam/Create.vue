@@ -9,7 +9,8 @@ const activeStep = ref(1)
 
 const questionSet = ref([
   {
-    title: 'asd',
+    title: '分组1',
+    score: 0,
     questions: [
       {
         type: 1,
@@ -127,6 +128,13 @@ function onAddQuestion(command) {
         answer: [],
       }
       break;
+    case 5:
+      dialogQuestion.value = {
+        type: command,
+        score: 0,
+        title: '',
+      }
+      break;
 
   }
 
@@ -221,8 +229,15 @@ function onAddQuestion(command) {
               <div class="add-group" @click="onAddQuestionGroup">添加题目分组
                 <IconRight/>
               </div>
-              <div class="info">共 0 题 0 分</div>
 
+              <div class="navigator-body">
+                <div class="info">共 0 题 0 分</div>
+                <div style="padding: 20px 20px 20px 28px" v-for="set in questionSet">
+                  <div>{{set.title}}<span>（共{{set.questions.length}}题{{set.score}}分）</span></div>
+                </div>
+              </div>
+
+              <div style="height: 30px;"></div>
               <div class="foot">
                 <el-button type="primary" @click="activeStep=2">保存与发布</el-button>
                 <el-button>仅保存</el-button>
@@ -427,11 +442,25 @@ function onAddQuestion(command) {
 .exam-designer .navigator {
   background-color: #fff;
   border-radius: 8px;
-  margin-bottom: 20px;
   min-height: 200px;
   position: relative;
 }
 
+
+.exam-designer .navigator .navigator-body {
+  margin-bottom: 40px;
+}
+
+.exam-designer .navigator .navigator-body > * {
+  padding: 10px;
+}
+
+.exam-designer .navigator .navigator-body .info {
+  position: relative;
+  border-bottom: #e7e7e7 1px solid;
+  right: 20px;
+  left: 20px;
+}
 
 .exam-designer .navigator > .foot {
   position: absolute;
