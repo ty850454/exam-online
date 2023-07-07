@@ -8,6 +8,16 @@ const activeStep = ref(1)
 
 
 const questionSet = ref([
+  {
+    title: 'asd',
+    questions: [
+      {
+        type: 1,
+        score: 0,
+        title: '123',
+      }
+    ]
+  }
 ])
 
 function onAddQuestionGroup() {
@@ -28,37 +38,99 @@ const dialogVisible = ref(false)
 
 const dialogQuestion = ref({})
 
+function onInsertCha() {
+  dialogQuestion.value.title += ' ___ '
+  onType4TitleChange(dialogQuestion.value.title)
+}
+
+function onType4TitleChange(text) {
+  let sp = text.split('___')
+  let l = text.split('___').length - 1
+  dialogQuestion.value.options = sp
+  dialogQuestion.value.answer.length = l
+  console.log(dialogQuestion.value)
+}
 
 function onAddQuestionSave() {
   dialogVisible.value = false
 }
 
-function onAddQuestion() {
+function onAddQuestion(command) {
   dialogVisible.value = true
-  dialogQuestion.value = {
-    type: 1,
-    score: 0,
-    title: '',
-    answer: '',
-    options: [
-      {
-        code: 'A',
-        content: ''
-      },
-      {
-        code: 'B',
-        content: ''
-      },
-      {
-        code: 'C',
-        content: ''
-      },
-      {
-        code: 'D',
-        content: ''
-      },
-    ]
+
+  switch (command) {
+    case 1:
+      dialogQuestion.value = {
+        type: command,
+        score: 0,
+        title: '',
+        answer: '',
+        options: [
+          {
+            code: 'A',
+            content: ''
+          },
+          {
+            code: 'B',
+            content: ''
+          },
+          {
+            code: 'C',
+            content: ''
+          },
+          {
+            code: 'D',
+            content: ''
+          },
+        ]
+      }
+      break;
+    case 2:
+      dialogQuestion.value = {
+        type: command,
+        score: 0,
+        title: '',
+        answer: [],
+        options: [
+          {
+            code: 'A',
+            content: ''
+          },
+          {
+            code: 'B',
+            content: ''
+          },
+          {
+            code: 'C',
+            content: ''
+          },
+          {
+            code: 'D',
+            content: ''
+          },
+        ]
+      }
+      break;
+    case 3:
+      dialogQuestion.value = {
+        type: command,
+        score: 0,
+        title: '',
+        answer: '',
+      }
+      break;
+    case 4:
+      dialogQuestion.value = {
+        type: command,
+        score: 0,
+        title: '',
+        answer: [],
+      }
+      break;
+
   }
+
+
 }
 
 </script>
@@ -166,24 +238,36 @@ function onAddQuestion() {
               请添加题目分组
             </div>
           </div>
-          <div class="card" v-if="questionSet.length > 0" v-for="question in questionSet">
-            <div>{{ question.title }} <span>共0题，0分</span></div>
-            <div class="empty" v-if="question.questions.length === 0">
-              请向分组添加题目
-            </div>
+          <div class="card" v-if="questionSet.length > 0" v-for="(set, si) in questionSet">
+            <div>{{ set.title }} <span>共0题，0分</span></div>
+              <div class="empty" v-if="set.questions.length === 0">
+                请向分组添加题目
+              </div>
+              <div v-for="(question, i) in set.questions" style="min-height: 100px">
+                <div>
+                  <div>{{question.title}}</div>
+                  <div>
+                    <div>
+                      <el-input></el-input>
+                    </div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                </div>
+              </div>
             <div>
 
               <el-dropdown @command="onAddQuestion">
                 <el-button type="primary">
-                  <el-button type="primary">新增题目</el-button>
+                  新增题目
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item>单选题</el-dropdown-item>
-                    <el-dropdown-item>多选题</el-dropdown-item>
-                    <el-dropdown-item>判断题</el-dropdown-item>
-                    <el-dropdown-item>填空题</el-dropdown-item>
-                    <el-dropdown-item>问答题</el-dropdown-item>
+                    <el-dropdown-item :command="1">单选题</el-dropdown-item>
+                    <el-dropdown-item :command="2">多选题</el-dropdown-item>
+                    <el-dropdown-item :command="3">判断题</el-dropdown-item>
+                    <el-dropdown-item :command="4">填空题</el-dropdown-item>
+                    <el-dropdown-item :command="5">问答题</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -204,7 +288,7 @@ function onAddQuestion() {
         <el-row>
           <el-col :span="12">
             <el-form-item label="题目类型" :label-width="100">
-              <el-select v-model="dialogQuestion.type" placeholder="选择题目类型">
+              <el-select v-model="dialogQuestion.type" placeholder="选择题目类型" @change="onAddQuestion">
                 <el-option label="单选题" :value="1"/>
                 <el-option label="多选题" :value="2"/>
                 <el-option label="判断题" :value="3"/>
@@ -215,15 +299,19 @@ function onAddQuestion() {
           </el-col>
           <el-col :span="12">
             <el-form-item label="分数" :label-width="100">
-              <el-input-number v-model="dialogQuestion.score"/>
+              <el-input-number v-model="dialogQuestion.score" :min="0"/>
             </el-form-item>
           </el-col>
         </el-row>
 
 
         <el-form-item label="题目内容" :label-width="100">
-          <el-input v-model="dialogQuestion.title" autocomplete="off" type="textarea"/>
+          <el-input v-if="dialogQuestion.type !== 4" v-model="dialogQuestion.title" autocomplete="off" type="textarea"/>
+          <el-input v-if="dialogQuestion.type === 4" v-model="dialogQuestion.title" autocomplete="off" type="textarea"
+                    @input="onType4TitleChange"/>
+          <el-button v-if="dialogQuestion.type === 4" type="primary" link @click="onInsertCha">插入填空符</el-button>
         </el-form-item>
+
 
         <div style="margin-left: 20px" v-if="dialogQuestion.type === 1">
           <el-row>
@@ -234,9 +322,7 @@ function onAddQuestion() {
               选项内容
             </el-col>
           </el-row>
-
           <el-radio-group v-model="dialogQuestion.answer" class="radios">
-
             <el-radio class="radio" v-for="option in dialogQuestion.options" :label="option.code" size="large">
               <el-row style="align-items: center">
                 <el-col :span="2">
@@ -247,20 +333,62 @@ function onAddQuestion() {
                 </el-col>
               </el-row>
             </el-radio>
-
           </el-radio-group>
-
         </div>
 
 
+        <div style="margin-left: 20px" v-if="dialogQuestion.type === 2">
+          <el-row>
+            <el-col :span="4">
+              设置答案
+            </el-col>
+            <el-col :span="20">
+              选项内容
+            </el-col>
+          </el-row>
+          <el-checkbox-group v-model="dialogQuestion.answer" class="check-box-list">
+            <el-checkbox class="check-box" v-for="option in dialogQuestion.options" :label="option.code" size="large">
+              <el-row style="align-items: center">
+                <el-col :span="2">
+                  {{ option.code }}
+                </el-col>
+                <el-col :span="22">
+                  <el-input v-model="option.content" placeholder="输入选项内容"/>
+                </el-col>
+              </el-row>
+            </el-checkbox>
+          </el-checkbox-group>
+        </div>
 
 
+        <div v-if="dialogQuestion.type === 3">
+          <el-form-item label="选项" :label-width="100">
+            <el-radio-group v-model="dialogQuestion.answer">
+              <el-radio label="T" size="large">正确</el-radio>
+              <el-radio label="F" size="large">错误</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+
+
+        <div v-if="dialogQuestion.type === 4">
+          <el-form-item label="答案" :label-width="100">
+            <div style="width: 100%;">
+              <el-row v-for="(a, i) in dialogQuestion.answer" style="margin-bottom: 10px">
+                <el-col :span="4">选项{{ i + 1 }}答案：</el-col>
+                <el-col :span="20">
+                  <el-input v-model="dialogQuestion.answer[i]" autocomplete="off" type="textarea"/>
+                </el-col>
+              </el-row>
+            </div>
+          </el-form-item>
+        </div>
 
 
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button>取消</el-button>
+          <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="onAddQuestionSave">保存</el-button>
         </span>
       </template>
@@ -374,12 +502,37 @@ function onAddQuestion() {
 
 .exam-designer .card .empty {
   text-align: center;
-  height: 100%;
+  height: 100px;
+  line-height: 100px;
 }
 
-.question-dialog .radios {
+.question-dialog .check-box-list {
+  display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.question-dialog .check-box-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
+.question-dialog .check-box-list .check-box {
+  width: 100%;
+}
+
+.question-dialog .check-box-list :deep(.el-checkbox__label) {
+  flex-grow: 1;
+}
+
+.question-dialog .check-box-list :deep(.el-checkbox__label) {
+  flex-grow: 1;
+}
+
+.question-dialog .check-box-list :deep(.el-checkbox:last-child) {
+  margin-right: 32px;
 }
 
 .question-dialog .radios .radio {
@@ -395,5 +548,11 @@ function onAddQuestion() {
 .question-dialog .radios :deep(.el-radio:last-child) {
   margin-right: 32px;
 }
+
+
+.card :deep(.el-button:focus) {
+//background-color: #20287e;
+}
+
 
 </style>
