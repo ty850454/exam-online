@@ -6,6 +6,22 @@ import IconRight from "@/components/icons/IconRight.vue";
 const form = ref({})
 const activeStep = ref(1)
 
+function getTypeTitle(type) {
+  switch (type) {
+    case 1:
+      return '单选题'
+    case 2:
+      return '多选题'
+    case 3:
+      return '判断题'
+    case 4:
+      return '填空题'
+    case 5:
+      return '问答题'
+    default:
+      return '未知'
+  }
+}
 
 const questionSet = ref([
   {
@@ -16,6 +32,25 @@ const questionSet = ref([
         type: 1,
         score: 0,
         title: '123',
+        answer: 'A,B',
+        options: [
+          {
+            code: 'A',
+            content: 'asdasd'
+          },
+          {
+            code: 'B',
+            content: 'asdasd'
+          },
+          {
+            code: 'C',
+            content: 'asdasd'
+          },
+          {
+            code: 'D',
+            content: 'asdas'
+          },
+        ]
       }
     ]
   }
@@ -233,7 +268,7 @@ function onAddQuestion(command) {
               <div class="navigator-body">
                 <div class="info">共 0 题 0 分</div>
                 <div style="padding: 20px 20px 20px 28px" v-for="set in questionSet">
-                  <div>{{set.title}}<span>（共{{set.questions.length}}题{{set.score}}分）</span></div>
+                  <div>{{ set.title }}<span>（共{{ set.questions.length }}题{{ set.score }}分）</span></div>
                 </div>
               </div>
 
@@ -255,21 +290,26 @@ function onAddQuestion(command) {
           </div>
           <div class="card" v-if="questionSet.length > 0" v-for="(set, si) in questionSet">
             <div>{{ set.title }} <span>共0题，0分</span></div>
-              <div class="empty" v-if="set.questions.length === 0">
-                请向分组添加题目
-              </div>
-              <div v-for="(question, i) in set.questions" style="min-height: 100px">
-                <div>
-                  <div>{{question.title}}</div>
-                  <div>
-                    <div>
-                      <el-input></el-input>
-                    </div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                </div>
-              </div>
+            <div class="empty" v-if="set.questions.length === 0">
+              请向分组添加题目
+            </div>
+            <table class="options">
+              <tr class="title">
+                <td>序号</td>
+                <td>题型</td>
+                <td>题目</td>
+                <td>答案</td>
+                <td>分数</td>
+                <td>操作</td>
+              </tr>
+              <tr v-for="(question, i) in set.questions">
+                <td>{{ i + 1 }}</td>
+                <td>{{ getTypeTitle(question.type) }}</td>
+                <td>{{ question.title }}</td>
+                <td>{{ question.answer }}</td>
+                <td>{{ question.score }}</td>
+              </tr>
+            </table>
             <div>
 
               <el-dropdown @command="onAddQuestion">
@@ -569,13 +609,13 @@ function onAddQuestion(command) {
 }
 
 
-.question-dialog .radios :deep(.el-radio__label) {
-  flex-grow: 1;
+.question-dialog .radios :deep(.el-radio) {
+  margin-right: 0;
 }
 
 
-.question-dialog .radios :deep(.el-radio:last-child) {
-  margin-right: 32px;
+.question-dialog .radios :deep(.el-radio__label) {
+  flex-grow: 1;
 }
 
 
@@ -583,5 +623,22 @@ function onAddQuestion(command) {
 //background-color: #20287e;
 }
 
+.card .options {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+.card .options td {
+  padding: 10px;
+}
+
+.card .options > .title {
+  background-color: #e5e5e5;
+}
+
+.card .options > .op {
+  margin-right: 10px;
+}
 
 </style>

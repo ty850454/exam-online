@@ -8,5 +8,5 @@ import (
 var (
 	DebugMode bool
 	DB        *gorm.DB
-	Router    *gin.Engine
+	Router    *gin.RouterGroup
 )
