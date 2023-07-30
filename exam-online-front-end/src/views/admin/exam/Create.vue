@@ -2,9 +2,53 @@
 
 import {ref} from "vue";
 import IconRight from "@/components/icons/IconRight.vue";
+import {get, post, patch} from '@/utils/http'
+import IconDelete from "@/components/icons/IconDelete.vue";
 
-const form = ref({})
-const activeStep = ref(1)
+
+const infoFormRef = ref()
+const info = ref({
+  id: 0,
+  title: '',
+  type: null,
+  joinType: 0,
+})
+const infoFormRules = {
+  title: [{required: true, message: '需要输入一个名称'}],
+  type: [{required: true, message: '需要选择一个分类'}],
+  joinType: [{required: true, message: '需要选择一个考生参加方式'}],
+}
+
+const activeStep = ref(0)
+
+const managementTypeDialogVisible = ref(false)
+
+function onAddTypeClicked() {
+  let i = types.value.length
+
+  post('/api/config', {name: '分类' + (i + 1), group: 'examType'})
+      .then(response => {
+        types.value.push({
+          id: response.id,
+          name: '分类' + (i + 1)
+        })
+      })
+}
+
+function onManagementTypeChanged(id, newName) {
+  patch(`/api/config/${id}?newName=${newName}`)
+}
+
+function onDeleteTypeClicked(index) {
+  types.value.splice(index, 1)
+}
+
+const types = ref([])
+
+get('/api/config/examType').then(response => {
+  types.value = response
+})
+
 
 function getTypeTitle(type) {
   switch (type) {
@@ -64,9 +108,18 @@ function onAddQuestionGroup() {
 }
 
 function onSaveInfoClick(nextStep) {
-  if (nextStep) {
-    activeStep.value = 1
-  }
+
+  infoFormRef.value.validate()
+      .then(() => {
+        post('/api/exam', info.value)
+            .then(data => {
+              info.value.id = data.id
+              if (nextStep) {
+                activeStep.value = 1
+              }
+            })
+      })
+
 }
 
 const dialogVisible = ref(false)
@@ -194,7 +247,7 @@ function onAddQuestion(command) {
         type="card">
       <el-tab-pane label="step1" :name="0">
 
-        <el-form :model="form" label-width="120px">
+        <el-form ref="infoFormRef" :model="info" label-width="120px" :rules="infoFormRules">
 
           <div class="card input-200">
 
@@ -202,29 +255,58 @@ function onAddQuestion(command) {
               基本信息
             </div>
 
-            <el-form-item label="考试名称">
-              <el-input v-model="form.name"/>
+            <el-form-item label="考试名称" prop="title">
+              <el-input v-model="info.title" placeholder="输入名称"/>
             </el-form-item>
 
-            <el-form-item label="考试分类">
-              <el-select v-model="form.region" placeholder="">
-                <el-option label="Zone one" value="shanghai"/>
-                <el-option label="Zone two" value="beijing"/>
+            <el-form-item label="考试分类" prop="type">
+              <el-select v-model="info.type" placeholder="选择分类" clearable>
+                <el-option v-for="type in types" :label="type.name" :value="type.id"/>
               </el-select>
+              <el-button type="primary" style="margin-left: 10px" text @click="managementTypeDialogVisible = true">管理分类
+              </el-button>
             </el-form-item>
 
-            <el-form-item label="开考时间">
-              <el-date-picker
-                  v-model="form.date1"
-                  type="datetime"
-                  placeholder="选择时间"
-                  style="width: 100%"
-              />
-            </el-form-item>
 
-            <el-form-item label="考试时长">
-              <el-input v-model="form.name"/>
-            </el-form-item>
+            <el-dialog v-model="managementTypeDialogVisible" title="管理类型" width="390"
+                       style="min-height: 300px;">
+              <el-table :data="types" max-height="400">
+                <el-table-column property="id" label="Id" width="80"/>
+                <el-table-column property="name" label="分类名" width="170">
+                  <template #default="scope">
+                    <el-input v-model="scope.row.name" style="width: 140px!important;" @change="onManagementTypeChanged(scope.row.id, scope.row.name)" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="100">
+                  <template #default="scope">
+                    <el-button type="danger" :icon="IconDelete" circle
+                               @click="onDeleteTypeClicked(scope.$index)"></el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="managementTypeDialogVisible = false">关闭</el-button>
+                  <el-button type="primary" @click="onAddTypeClicked">
+                    新增类型
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
+
+            <!--            <el-form-item label="开考时间">-->
+            <!--              <el-date-picker-->
+            <!--                  v-model="form.date1"-->
+            <!--                  type="datetime"-->
+            <!--                  placeholder="选择时间"-->
+            <!--                  style="width: 100%"-->
+            <!--              />-->
+            <!--            </el-form-item>-->
+
+            <!--            <el-form-item label="考试时长">-->
+            <!--              <el-input v-model="form.name"/>-->
+            <!--            </el-form-item>-->
           </div>
 
 
@@ -234,15 +316,12 @@ function onAddQuestion(command) {
               参加方式
             </div>
 
-
-            <el-form-item label="考生参加方式">
-              <el-radio-group v-model="form.resource">
-                <el-radio label="免登录"/>
-                <el-radio label="免登录+口令"/>
+            <el-form-item label="考生参加方式" prop="joinType">
+              <el-radio-group v-model="info.joinType">
+                <el-radio :label="1">免登录</el-radio>
+                <el-radio :label="2">免登录+口令</el-radio>
               </el-radio-group>
             </el-form-item>
-
-
           </div>
 
 

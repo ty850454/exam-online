@@ -2,9 +2,9 @@ package main
 
 import (
 	"embed"
-	_ "exam-online-back-end/api"
 	"exam-online-back-end/global"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm/schema"
 	"io/fs"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -52,15 +53,31 @@ func initServer() *gin.Engine {
 	}
 	gin.DisableConsoleColor()
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		// 准许跨域请求网站,多个使用,分开,限制使用*
+		AllowOrigins: []string{"*"},
+		// 准许使用的请求方式
+		AllowMethods: []string{"*"},
+		// 准许使用的请求表头
+		AllowHeaders: []string{"*"},
+		// 显示的请求表头
+		ExposeHeaders: []string{"*"},
+		// 凭证共享,确定共享
+		AllowCredentials: true,
+		// 容许跨域的原点网站,可以直接return true就万事大吉了
+		AllowOriginFunc: func(origin string) bool {
+			return true
+		},
+		// 超时时间设定
+		MaxAge: 24 * time.Hour,
+	}))
 
 	sub, _ := fs.Sub(dist, "dist")
 	staticServer = http.FileServer(http.FS(sub))
 	router.NoRoute(staticHandle)
 
-	global.Router = router.Group("/api")
-	global.Router.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
+	global.ApiRouter = router.Group("/api")
+	global.UserRouter = router.Group("/u")
 
 	return router
 }

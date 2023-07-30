@@ -6,5 +6,20 @@ import (
 )
 
 func initRouter() {
-	global.Router.POST("/admin", api.Create)
+	global.ApiRouter.POST("/login", api.Login)
+
+	global.ApiRouter.POST("/admin", api.Create)
+	global.ApiRouter.DELETE("/admin/:id", api.Delete)
+
+	global.ApiRouter.POST("/exam", api.CreateExamPaper)
+	global.ApiRouter.GET("/exam", api.ListExamPaper)
+
+	global.UserRouter.GET("/exam/:id", api.UserGetExamPaper)
+
+	global.ApiRouter.POST("/config", api.AddConfig)
+	global.ApiRouter.GET("/config/:group", api.ListConfig)
+	global.ApiRouter.GET("/config/:group/:name", api.GetConfig)
+	global.ApiRouter.PATCH("/config/:id", api.UpdateConfig)
+	global.ApiRouter.DELETE("/config/:id", api.DeleteConfig)
+
 }

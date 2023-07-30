@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	DebugMode bool
-	DB        *gorm.DB
-	Router    *gin.RouterGroup
+	DebugMode  bool
+	DB         *gorm.DB
+	ApiRouter  *gin.RouterGroup
+	UserRouter *gin.RouterGroup
 )
