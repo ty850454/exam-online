@@ -8,10 +8,10 @@ import IconDelete from "@/components/icons/IconDelete.vue";
 
 const infoFormRef = ref()
 const info = ref({
-  id: 0,
-  title: '',
+  id: 25,
+  title: null,
   type: null,
-  joinType: 0,
+  joinType: null,
 })
 const infoFormRules = {
   title: [{required: true, message: '需要输入一个名称'}],
@@ -19,7 +19,7 @@ const infoFormRules = {
   joinType: [{required: true, message: '需要选择一个考生参加方式'}],
 }
 
-const activeStep = ref(0)
+const activeStep = ref(1)
 
 const managementTypeDialogVisible = ref(false)
 

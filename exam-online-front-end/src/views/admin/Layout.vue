@@ -4,8 +4,10 @@ import {RouterView} from "vue-router";
 import IconLogo from "@/components/icons/IconLogo.vue";
 import IconHome from "@/components/icons/IconHome.vue";
 import IconAddFill from "@/components/icons/IconAddFill.vue";
-import IconBellFill from "@/components/icons/IconBellFill.vue";
 import IconUserFill from "@/components/icons/IconUserFill.vue";
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
 
 </script>
 
@@ -16,48 +18,35 @@ import IconUserFill from "@/components/icons/IconUserFill.vue";
     <header class="admin-layout">
       <div>
         <IconLogo class="logo"/>
-        <span style="font-size: 20px;font-weight: 900;margin-left: 10px;margin-right: 40px;vertical-align: middle;">考试系统</span>
+        <span
+            style="font-size: 20px;font-weight: 900;margin-left: 10px;margin-right: 40px;vertical-align: middle;">考试系统</span>
         <div class="menu">
-          <RouterLink to="/admin/dashboard"><IconHome/></RouterLink>
+          <RouterLink to="/admin/dashboard">
+            <IconHome/>
+          </RouterLink>
           <RouterLink to="/admin/exam"><span class="menu-text">考试</span></RouterLink>
-          <RouterLink to="/admin/resource"><span class="menu-text">资源</span></RouterLink>
+<!--          <RouterLink to="/admin/resource"><span class="menu-text">资源</span></RouterLink>-->
           <RouterLink to="/admin/manage"><span class="menu-text">管理</span></RouterLink>
         </div>
       </div>
       <div class="buttons">
-        <div><IconAddFill style="color: #fff"/></div>
-        <div>
-          <el-popover
-              title="Title"
-              :show-arrow="false"
-              placement="bottom-start"
-              :width="200"
-              :offset="18"
-              trigger="hover"
-              content="this is content, this is content, this is content">
-            <template #reference>
-              <IconBellFill style="color: #fff"/>
-            </template>
-          </el-popover>
+        <div class="bo">
+          <IconAddFill style="color: #fff"/>
         </div>
-        <div>
-          <el-popover
-              title="Title"
-              :show-arrow="false"
-              placement="bottom-start"
-              :width="200"
-              :offset="18"
-              trigger="hover"
-              content="this is content, this is content, this is content">
-            <template #reference>
+        <el-dropdown>
+          <div class="bo">
               <IconUserFill style="color: #fff"/>
-            </template>
-          </el-popover>
-        </div>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="userStore.logout">退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </header>
     <div style="flex-grow: 1">
-      <RouterView />
+      <RouterView/>
     </div>
   </div>
 
@@ -71,7 +60,6 @@ import IconUserFill from "@/components/icons/IconUserFill.vue";
   flex-direction: column;
   height: 100%;
 }
-
 
 
 .admin-layout {
@@ -123,9 +111,10 @@ import IconUserFill from "@/components/icons/IconUserFill.vue";
 .buttons {
   display: flex;
   height: 58px;
+  margin-right: 20px;
 }
 
-.buttons > div {
+.buttons .bo {
   height: 58px;
   width: 58px;
   font-size: 25px;
@@ -134,7 +123,7 @@ import IconUserFill from "@/components/icons/IconUserFill.vue";
   cursor: pointer;
 }
 
-.buttons > div:hover {
+.buttons .bo:hover {
   background-color: #353d97;
 }
 

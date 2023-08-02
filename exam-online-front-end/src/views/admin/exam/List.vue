@@ -12,6 +12,7 @@ import IconDeleteFill from "@/components/icons/IconDeleteFill.vue";
 import IconFundFill from "@/components/icons/IconFundFill.vue";
 
 import { useRouter } from "vue-router"
+import {get} from "@/utils/http";
 let router = useRouter()
 
 
@@ -27,6 +28,18 @@ const options = [
   }
 ]
 
+const pageSize = 10
+const total = ref(0)
+const examPapers = ref([])
+
+function onCurrentChanged(page) {
+  get('/api/exam?pageNum='+page+'&pageSize='+pageSize)
+      .then(response => {
+        examPapers.value = response.data
+        total.value = response.total
+      })
+}
+onCurrentChanged(1)
 
 function onCreateClick() {
   router.push('/admin/exam/create')
@@ -117,10 +130,25 @@ function onCreateClick() {
             </div>
           </el-card>
 
+          <el-card v-for="examPaper in examPapers" class="card" shadow="never" :header="examPaper.title">
+            <template #header>
+              <div class="card-header">
+                <el-tag type="success" effect="dark" disable-transitions>{{examPaper.status}}</el-tag>
+                <span style="margin-left: 10px;">{{examPaper.title}}</span>
+              </div>
+            </template>
+            <div class="card-body">
+              <div>2023-04-04 20:30 ~ 2023-05-01 20:30</div>
+              <div>
+                <el-button class="button" text>成绩</el-button>
+              </div>
+            </div>
+          </el-card>
+
         </div>
 
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :total="1"/>
+          <el-pagination background layout="prev, pager, next" :total="total" @current-change="onCurrentChanged"/>
         </div>
       </div>
 

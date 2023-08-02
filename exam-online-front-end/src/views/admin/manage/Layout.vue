@@ -13,7 +13,7 @@ import IconUserGroupFill from "@/components/icons/IconUserGroupFill.vue";
         管理
       </div>
       <div class="menus">
-        <RouterLink class="menu" to="/admin/manage/admin"><IconQuestionFill/>&nbsp;&nbsp;管理员</RouterLink>
+        <RouterLink class="menu" to="/admin/manage/admin"><IconQuestionFill/>&nbsp;&nbsp;子管理员</RouterLink>
         <RouterLink class="menu" to="/admin/manage/system"><IconUserGroupFill/>&nbsp;&nbsp;系统设置</RouterLink>
         <RouterLink class="menu" to="/admin/manage/api"><IconUserGroupFill/>&nbsp;&nbsp;接口</RouterLink>
       </div>

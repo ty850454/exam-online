@@ -57,5 +57,5 @@ func ListExamQuestion(ctx *gin.Context) {
 	}
 
 	ctx.Param("id")
-
+	print(userId)
 }

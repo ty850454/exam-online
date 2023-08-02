@@ -1,12 +1,15 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory, useRouter} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useUserStore } from '@/stores/user'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: HomeView
+      component: HomeView,
+      redirect:'/admin/dashboard',
     },
     {
       path: '/home',
@@ -18,6 +21,11 @@ const router = createRouter({
     },
     {
       path: '/admin',
+      beforeEnter: (to, from) => {
+        if (!useUserStore().isLogin) {
+          return '/admin/login'
+        }
+      },
       redirect:'/admin/dashboard',
       component: () => import('../views/admin/Layout.vue'),
       children: [

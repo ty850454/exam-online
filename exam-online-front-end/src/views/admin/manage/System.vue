@@ -3,7 +3,7 @@
 </script>
 
 <template>
-系统设置
+  <el-empty description="暂时没有什么可以设置的" />
 </template>
 
 <style scoped>

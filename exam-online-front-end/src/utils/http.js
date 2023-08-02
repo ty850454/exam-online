@@ -1,6 +1,5 @@
 const baseurl = 'http://127.0.0.1:8080'
 
-
 export function post(url, data) {
     return fetch(baseurl + url, {
         method: 'POST',
@@ -13,7 +12,7 @@ export function post(url, data) {
         if (response.status >= 200 && response.status < 400) {
             return response.json()
         }
-        return Promise.reject(response)
+        return Promise.reject(response.json())
     })
 }
 export function get(url) {

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-开发接口
+  <el-empty description="开放接口暂时没有提供" />
 </template>
 
 <style scoped>

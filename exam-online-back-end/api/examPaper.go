@@ -15,7 +15,9 @@ type ExamPaper struct {
 	JoinType int `json:"joinType,omitempty"`
 	AdminId  int `json:"adminId,omitempty"`
 	// 1=未发布，2=已发布
-	Status int `json:"status,omitempty"`
+	Status    int       `json:"status,omitempty"`
+	StartTime *DateTime `json:"startTime,omitempty"`
+	EndTime   *DateTime `json:"endTime,omitempty"`
 }
 
 func CreateExamPaper(ctx *gin.Context) {

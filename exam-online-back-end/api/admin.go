@@ -12,11 +12,12 @@ import (
 type Admin struct {
 	Id       int    `json:"id,omitempty"`
 	Username string `json:"username,omitempty"`
+	Name     string `json:"name,omitempty"`
 	Password string `json:"password,omitempty"`
 	Super    bool   `json:"super,omitempty"`
 }
 
-func Create(ctx *gin.Context) {
+func CreateAdmin(ctx *gin.Context) {
 
 	if _, ok := GetUserId(ctx); !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
@@ -47,11 +48,45 @@ func Create(ctx *gin.Context) {
 	})
 }
 
-func Page(ctx *gin.Context) {
+func PageAdmin(ctx *gin.Context) {
+	_, ok := GetUserId(ctx)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid token.",
+		})
+		return
+	}
+
+	var result []Admin
+	var count int64
+	query := global.DB.Model(&result).Where("super = 0")
+
+	if err := query.Count(&count).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	if count == 0 {
+		ctx.JSON(http.StatusOK, EmptyPage)
+		return
+	}
+
+	if err := query.Limit(500).Offset(0).Find(&result).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, PageRes{
+		Total: count,
+		Data:  result,
+	})
 
 }
 
-func Delete(ctx *gin.Context) {
+func DeleteAdmin(ctx *gin.Context) {
 
 	userId, ok := GetUserId(ctx)
 	if !ok {

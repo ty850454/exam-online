@@ -3,6 +3,11 @@ import {ref} from "vue";
 import IconUserFill from "@/components/icons/IconUserFill.vue";
 import IconLock from "@/components/icons/IconLock.vue";
 import { useRouter } from "vue-router"
+import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
+
+const userStore = useUserStore()
+
 let router = useRouter()
 
 
@@ -18,7 +23,17 @@ let loginRules = {
 const loading = ref(false)
 
 function onLoginClick() {
-  router.push('/admin')
+  userStore.login(loginForm.value.username, loginForm.value.password).then(() => {
+    router.push('/admin')
+  }).catch(err => {
+    err.then(ej => {
+      ElMessage({
+        showClose: true,
+        message: ej.error,
+        type: 'error',
+      })
+    })
+  })
 }
 
 

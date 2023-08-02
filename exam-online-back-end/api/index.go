@@ -24,7 +24,7 @@ func Login(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&loginVo)
 
 	var admin Admin
-	if err := global.DB.Table("admin").Select("id").Where("username = ? and password = ?", loginVo.Username, loginVo.Password).Take(&admin).Error; err != nil {
+	if err := global.DB.Table("admin").Select("id,super").Where("username = ? and password = ?", loginVo.Username, loginVo.Password).Take(&admin).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "username or password error",
 		})
@@ -39,6 +39,7 @@ func Login(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
+		"super": admin.Super,
 	})
 }
 

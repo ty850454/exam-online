@@ -8,8 +8,9 @@ import (
 func initRouter() {
 	global.ApiRouter.POST("/login", api.Login)
 
-	global.ApiRouter.POST("/admin", api.Create)
-	global.ApiRouter.DELETE("/admin/:id", api.Delete)
+	global.ApiRouter.GET("/admin", api.PageAdmin)
+	global.ApiRouter.POST("/admin", api.CreateAdmin)
+	global.ApiRouter.DELETE("/admin/:id", api.DeleteAdmin)
 
 	global.ApiRouter.POST("/exam", api.CreateExamPaper)
 	global.ApiRouter.GET("/exam", api.ListExamPaper)
