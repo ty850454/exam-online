@@ -12,8 +12,21 @@ func initRouter() {
 	global.ApiRouter.POST("/admin", api.CreateAdmin)
 	global.ApiRouter.DELETE("/admin/:id", api.DeleteAdmin)
 
-	global.ApiRouter.POST("/exam", api.CreateExamPaper)
-	global.ApiRouter.GET("/exam", api.ListExamPaper)
+	global.ApiRouter.POST("/exam/:paperId", api.SaveExam)
+	global.ApiRouter.GET("/exam/:paperId", api.GetExam)
+
+	// global.ApiRouter.POST("/examPaper", api.CreateExamPaper)
+	// global.ApiRouter.GET("/examPaper", api.ListExamPaper)
+
+	// global.ApiRouter.POST("/exam/:id/group", api.CreateExamPaperGroup)
+	// global.ApiRouter.DELETE("/exam/:id/group/:groupId", api.DeleteExamPaperGroup)
+	// global.ApiRouter.PUT("/exam/:id/group/:groupId", api.UpdateExamPaperGroup)
+	// global.ApiRouter.GET("/exam/:id/group", api.ListExamPaperGroup)
+	//
+	// global.ApiRouter.POST("/exam/:id/group/:groupId/question", api.CreateExamQuestion)
+	// global.ApiRouter.DELETE("/exam/:id/group/:groupId/question/:questionId", api.DeleteExamQuestion)
+	// global.ApiRouter.PUT("/exam/:id/group/:groupId/question/:questionId", api.UpdateExamQuestion)
+	// global.ApiRouter.GET("/exam/:id/group/question", api.ListExamQuestion)
 
 	global.UserRouter.GET("/exam/:id", api.UserGetExamPaper)
 

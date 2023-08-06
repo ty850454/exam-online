@@ -15,13 +15,12 @@ type ExamPaper struct {
 	JoinType int `json:"joinType,omitempty"`
 	AdminId  int `json:"adminId,omitempty"`
 	// 1=未发布，2=已发布
-	Status    int       `json:"status,omitempty"`
-	StartTime *DateTime `json:"startTime,omitempty"`
-	EndTime   *DateTime `json:"endTime,omitempty"`
+	Status   int    `json:"status,omitempty"`
+	Question string `json:"question,omitempty"`
 }
 
-func CreateExamPaper(ctx *gin.Context) {
-	userId, ok := GetUserId(ctx)
+func CreateExamPaper(ctx *global.Context) {
+	userId, ok := ctx.GetUserId()
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid token.",
@@ -49,7 +48,7 @@ type ExamPaperReq struct {
 	PageReq
 }
 
-func UserGetExamPaper(ctx *gin.Context) {
+func UserGetExamPaper(ctx *global.Context) {
 	id := ctx.Param("id")
 	idInt, _ := strconv.Atoi(id)
 
@@ -66,8 +65,8 @@ func UserGetExamPaper(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func ListExamPaper(ctx *gin.Context) {
-	userId, ok := GetUserId(ctx)
+func ListExamPaper(ctx *global.Context) {
+	userId, ok := ctx.GetUserId()
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid token.",

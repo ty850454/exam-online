@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql/driver"
+	"fmt"
 	"time"
 )
 
@@ -23,27 +25,36 @@ func (n *PageReq) GetOffset() int {
 	return (n.PageNum - 1) * n.PageSize
 }
 
-type DateTime time.Time
+type DateTime struct {
+	time.Time
+}
 
 const timeFormat = "2006-01-02 15:04:05"
 const dateFormat = "2006-01-02"
 
-func (t DateTime) MarshalJSON() ([]byte, error) {
-	origin := time.Time(t)
-
-	if origin.IsZero() {
+func (t *DateTime) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
 		return []byte("null"), nil
 	}
-	return []byte(origin.Format(timeFormat)), nil
+	formatted := fmt.Sprintf("\"%s\"", t.Format(timeFormat))
+	return []byte(formatted), nil
 }
 
-// func (t DateTime) UnmarshalJSON(data []byte) (err error) {
-// 	if len(data) == 2 {
-// 		*t = Date{Time: time.Time{}}
-// 		return
-// 	}
-// 	loc, _ := time.LoadLocation("Asia/Shanghai")
-// 	now, err := time.ParseInLocation(`"`+dateFormat+`"`, string(data), loc)
-// 	*t = Date{Time: now}
-// 	return
-// }
+// Value insert timestamp into mysql need this function.
+func (t *DateTime) Value() (driver.Value, error) {
+	var zeroTime time.Time
+	if t.Time.UnixNano() == zeroTime.UnixNano() {
+		return nil, nil
+	}
+	return t.Time, nil
+}
+
+// Scan value of time.Time
+func (t *DateTime) Scan(v interface{}) error {
+	value, ok := v.(time.Time)
+	if ok {
+		*t = DateTime{Time: value}
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
+}

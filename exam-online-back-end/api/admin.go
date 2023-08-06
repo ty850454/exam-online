@@ -17,9 +17,9 @@ type Admin struct {
 	Super    bool   `json:"super,omitempty"`
 }
 
-func CreateAdmin(ctx *gin.Context) {
+func CreateAdmin(ctx *global.Context) {
 
-	if _, ok := GetUserId(ctx); !ok {
+	if _, ok := ctx.GetUserId(); !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid token.",
 		})
@@ -48,8 +48,8 @@ func CreateAdmin(ctx *gin.Context) {
 	})
 }
 
-func PageAdmin(ctx *gin.Context) {
-	_, ok := GetUserId(ctx)
+func PageAdmin(ctx *global.Context) {
+	_, ok := ctx.GetUserId()
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid token.",
@@ -86,9 +86,9 @@ func PageAdmin(ctx *gin.Context) {
 
 }
 
-func DeleteAdmin(ctx *gin.Context) {
+func DeleteAdmin(ctx *global.Context) {
 
-	userId, ok := GetUserId(ctx)
+	userId, ok := ctx.GetUserId()
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid token.",

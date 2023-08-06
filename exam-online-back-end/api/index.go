@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"strings"
 )
 
 type LoginVo struct {
@@ -19,7 +18,7 @@ type Claims struct {
 	Username string `json:"username,omitempty"`
 }
 
-func Login(ctx *gin.Context) {
+func Login(ctx *global.Context) {
 	var loginVo LoginVo
 	_ = ctx.ShouldBindJSON(&loginVo)
 
@@ -41,33 +40,4 @@ func Login(ctx *gin.Context) {
 		"token": tokenString,
 		"super": admin.Super,
 	})
-}
-
-func GetUserId(ctx *gin.Context) (int, bool) {
-	authorization := ctx.Request.Header.Get("Authorization")
-	if len(authorization) == 0 {
-		return 0, false
-	}
-	index := strings.IndexByte(authorization, ' ')
-	if index < 0 {
-		return 0, false
-	}
-	_type := authorization[:index]
-	if strings.Compare(_type, "Bearer") != 0 {
-		return 0, false
-	}
-	index = strings.LastIndexByte(authorization, ' ') + 1
-	tokenStr := authorization[index:]
-
-	token, _ := jwt.Parse(tokenStr, checkToken)
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if userId, ok := claims["userId"].(float64); ok {
-			return int(userId), true
-		}
-	}
-	return 0, false
-}
-
-func checkToken(_ *jwt.Token) (interface{}, error) {
-	return []byte("abc"), nil
 }

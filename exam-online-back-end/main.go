@@ -43,7 +43,7 @@ func initDb() {
 
 }
 
-func initServer() *gin.Engine {
+func initServer() *global.Engine {
 	if global.DebugMode {
 		global.DebugMode = true
 		fmt.Println("运行在debug模式")
@@ -52,7 +52,7 @@ func initServer() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	gin.DisableConsoleColor()
-	router := gin.Default()
+	router := global.NewEngine()
 	router.Use(cors.New(cors.Config{
 		// 准许跨域请求网站,多个使用,分开,限制使用*
 		AllowOrigins: []string{"*"},
